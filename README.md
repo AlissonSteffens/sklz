@@ -7,7 +7,7 @@
 
 You don't copy-paste components across all your repositories. You don't manually track changes and propagate them to every project that uses them. You use npm.
 
-**sklz** brings the same philosophy to agent skills. Skills are libraries — it doesn't make sense to version them inside every repo, duplicating files and polluting your git history. Version only your `skills.json` and run `sklz install` to get all your dependencies. Done.
+**sklz** brings the same philosophy to agent skills. Skills are libraries — it doesn't make sense to version them inside every repo, duplicating files and polluting your git history. Version only your `sklz.json` and run `sklz install` to get all your dependencies. Done.
 
 ```bash
 npm install -g @alissonsteffens/sklz
@@ -27,14 +27,13 @@ sklz install --tag design-system
 sklz update
 ```
 
-Add `.github/skills/` to your `.gitignore`. Commit only `skills.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
+Add `.agents/skills/` to your `.gitignore`. Commit only `sklz.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
 
 ---
 
 ## Why
 
 Today, most teams manage agent skills by copying `SKILL.md` files into their repos. This works until:
-
 - You have 10 repos using the same skill and need to update it
 - Someone changes a skill in one repo and forgets the other 9
 - Your git history is full of diffs from skill files nobody wrote by hand
@@ -48,10 +47,17 @@ You already solved this problem for code with package managers. **sklz** solves 
 
 1. You register git repos that contain skills (your org's, open source, whatever)
 2. sklz clones them locally and keeps them synced via `git pull`
-3. When you install a skill, it copies the files to `.github/skills/<name>/`
-4. A `skills.json` in your project root tracks what's installed, from where, and at which commit
+3. When you install a skill, it copies the files to `.agents/skills/<name>/`
+4. A `sklz.json` in your project root tracks what's installed, from where, and at which commit
 
 No databases. No APIs. Just git and files. Uses the `git` already configured on your machine — if you can clone the repo, sklz can use it.
+
+---
+
+## Supported platforms:
+- Claude Code
+- GitHub Copilot
+
 
 ---
 
@@ -88,13 +94,13 @@ sklz install design-skills/button-spec
 
 ---
 
-## skills.json
+## sklz.json
 
 This is the only file you commit. It looks like this:
 
 ```json
 {
-  "skills": {
+  "sklz": {
     "button-spec": {
       "repo": "https://github.com/my-org/design-skills.git",
       "repoName": "design-skills",
@@ -110,7 +116,7 @@ This is the only file you commit. It looks like this:
 Your `.gitignore`:
 
 ```
-.github/skills/
+.agents/skills/
 ```
 
 New dev joins the team? They run `sklz install` and everything is there.

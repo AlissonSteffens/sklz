@@ -7,8 +7,8 @@ import { mkdirSync, existsSync } from 'node:fs';
 export const SKLZ_HOME = resolve(homedir(), '.sklz');
 export const REPOS_DIR = resolve(SKLZ_HOME, 'repos');
 export const CONFIG_FILE = resolve(SKLZ_HOME, 'config.json');
-export const SKILLS_JSON = 'skills.json';
-export const SKILLS_INSTALL_DIR = '.github/skills';
+export const SKILLS_JSON = 'sklz.json';
+export const SKILLS_INSTALL_DIR = '.agents/skills';
 
 export function ensureSklzHome() {
   if (!existsSync(SKLZ_HOME)) mkdirSync(SKLZ_HOME, { recursive: true });

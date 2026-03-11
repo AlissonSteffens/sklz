@@ -7,15 +7,15 @@ import {
   info, success, warn, error, heading, table, c, log,
 } from './utils.js';
 
-// ── Skills.json (project-level) ────────────────────────
+// ── sklz.json (project-level) ──────────────────────────
 
 function loadSkillsJson(cwd) {
   const p = resolve(cwd, SKILLS_JSON);
-  if (!existsSync(p)) return { skills: {} };
+  if (!existsSync(p)) return { sklz: {} };
   try {
     return JSON.parse(readFileSync(p, 'utf-8'));
   } catch {
-    return { skills: {} };
+    return { sklz: {} };
   }
 }
 
@@ -183,7 +183,7 @@ function copySkillToProject(skill, cwd) {
   const sjData = loadSkillsJson(cwd);
   const repoPath = resolve(REPOS_DIR, skill.repoName);
 
-  sjData.skills[skill.name] = {
+  sjData.sklz[skill.name] = {
     repo: skill.repoUrl,
     repoName: skill.repoName,
     version: skill.version,
@@ -259,7 +259,7 @@ export function installSkills(names, { tag, cwd = process.cwd() } = {}) {
 
 export function updateSkills(names, { cwd = process.cwd() } = {}) {
   const sjData = loadSkillsJson(cwd);
-  const installed = Object.keys(sjData.skills);
+  const installed = Object.keys(sjData.sklz);
 
   if (installed.length === 0) {
     warn('No skills installed in this project. Run "sklz install <name>" first.');
@@ -268,7 +268,7 @@ export function updateSkills(names, { cwd = process.cwd() } = {}) {
 
   const toUpdate = names && names.length > 0
     ? names.filter(n => {
-        if (!sjData.skills[n]) {
+        if (!sjData.sklz[n]) {
           warn(`Skill "${n}" is not installed — skipping`);
           return false;
         }
@@ -286,7 +286,7 @@ export function updateSkills(names, { cwd = process.cwd() } = {}) {
 
   let updated = 0;
   for (const name of toUpdate) {
-    const entry = sjData.skills[name];
+    const entry = sjData.sklz[name];
     const latest = allSkills.find(s => s.name === name && s.repoUrl === entry.repo);
 
     if (!latest) {
@@ -326,7 +326,7 @@ export function updateSkills(names, { cwd = process.cwd() } = {}) {
 export function uninstallSkill(name, { cwd = process.cwd() } = {}) {
   const sjData = loadSkillsJson(cwd);
 
-  if (!sjData.skills[name]) {
+  if (!sjData.sklz[name]) {
     error(`Skill "${name}" is not installed in this project`);
     return;
   }
@@ -336,7 +336,7 @@ export function uninstallSkill(name, { cwd = process.cwd() } = {}) {
     rmSync(skillDir, { recursive: true, force: true });
   }
 
-  delete sjData.skills[name];
+  delete sjData.sklz[name];
   saveSkillsJson(cwd, sjData);
   success(`Uninstalled ${c('bold', name)}`);
 }
@@ -345,7 +345,7 @@ export function uninstallSkill(name, { cwd = process.cwd() } = {}) {
 
 export function statusSkills({ cwd = process.cwd() } = {}) {
   const sjData = loadSkillsJson(cwd);
-  const installed = Object.entries(sjData.skills);
+  const installed = Object.entries(sjData.sklz);
 
   heading('Installed skills in this project');
   log();
