@@ -10,7 +10,7 @@ You don't copy-paste components across all your repositories. You don't manually
 **sklz** brings the same philosophy to agent skills. Skills are libraries — it doesn't make sense to version them inside every repo, duplicating files and polluting your git history. Version only your `skills.json` and run `sklz install` to get all your dependencies. Done.
 
 ```bash
-npm install -g sklz
+npm install -g @alissonsteffens/sklz
 ```
 
 ```bash
