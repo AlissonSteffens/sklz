@@ -1,6 +1,6 @@
 {
-  "name": "@alissonsteffens/sklz",
-  "version": "1.0.0",
+  "name": "sklz",
+  "version": "0.0.1",
   "description": "Skill Manager — a CLI tool to manage, install and update reusable skills from git repositories",
   "type": "module",
   "bin": {
@@ -22,5 +22,11 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "prepublish": "npm pack --dry-run",
+    "release:patch": "npm version patch && npm publish --access public",
+    "release:minor": "npm version minor && npm publish --access public",
+    "release:major": "npm version major && npm publish --access public"
+  }
 }
