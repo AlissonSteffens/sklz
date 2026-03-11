@@ -1,5 +1,5 @@
 {
-  "name": "sklz",
+  "name": "@alissonsteffens/sklz",
   "version": "0.0.3",
   "description": "Skill Manager — a CLI tool to manage, install and update reusable skills from git repositories",
   "type": "module",
