@@ -85,7 +85,11 @@ ${c('bold', 'EXAMPLES')}
   sklz update
 
 ${c('bold', 'REPO STRUCTURE')}
-  A skills repo should contain skill directories at the root, each with:
+  Skills can live at the repo root or inside a top-level ${c('dim', 'skills/')} subdirectory:
+    ${c('dim', 'my-repo/button-spec/SKILL.md')}
+    ${c('dim', 'my-repo/skills/button-spec/SKILL.md')}
+
+  Each skill directory must contain:
     ${c('dim', 'SKILL.md')}  — Required. YAML frontmatter (name, description, metadata.version, metadata.tags) + instructions
     ${c('dim', '...')}       — Any additional files
 `);

@@ -112,11 +112,17 @@ export function discoverSkills({ sync = true } = {}) {
 
     if (!existsSync(repoPath)) continue;
 
-    // Scan top-level directories for SKILL.md
-    const entries = readdirSync(repoPath);
+    // Determine directories to scan: if a top-level 'skills/' folder exists, scan inside it;
+    // otherwise fall back to scanning top-level directories directly.
+    const skillsSubdir = resolve(repoPath, 'skills');
+    const scanRoot = existsSync(skillsSubdir) && statSync(skillsSubdir).isDirectory()
+      ? skillsSubdir
+      : repoPath;
+
+    const entries = readdirSync(scanRoot);
     for (const entry of entries) {
       if (entry.startsWith('.')) continue;
-      const entryPath = resolve(repoPath, entry);
+      const entryPath = resolve(scanRoot, entry);
       if (!statSync(entryPath).isDirectory()) continue;
 
       const meta = readSkillMeta(entryPath);

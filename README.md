@@ -133,10 +133,10 @@ New dev joins the team? They run `sklz install` and everything is there.
 
 ## Skills repo structure
 
-A skills repo is a regular git repository. Each top-level directory with a `SKILL.md` file is a skill:
+A skills repo is a regular git repository. Skills can live at the root or inside a top-level `skills/` subdirectory — sklz detects either layout automatically:
 
 ```
-my-skills-repo/
+my-skills-repo/          (root layout)
 ├── button-spec/
 │   ├── SKILL.md
 │   └── templates/
@@ -145,6 +145,19 @@ my-skills-repo/
 │   └── SKILL.md
 └── ci-pipeline/
     └── SKILL.md
+```
+
+```
+my-skills-repo/          (skills/ layout)
+└── skills/
+    ├── button-spec/
+    │   ├── SKILL.md
+    │   └── templates/
+    │       └── button.css
+    ├── react-patterns/
+    │   └── SKILL.md
+    └── ci-pipeline/
+        └── SKILL.md
 ```
 
 ### SKILL.md frontmatter
