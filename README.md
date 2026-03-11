@@ -54,9 +54,17 @@ No databases. No APIs. Just git and files. Uses the `git` already configured on 
 
 ---
 
-## Supported platforms:
-- Claude Code
-- GitHub Copilot
+## Supported platforms
+
+By default, sklz installs skills to `.agents/skills/`. Different platforms use different directories:
+
+| Platform | Skills directory |
+|---|---|
+| GitHub Copilot | `.github/skills/` |
+| Claude Code | `.claude/skills/` |
+| Antigravity | `.agents/skills/` |
+
+`.agents/skills/` is currently the default and works across most platforms. Platform-specific install paths may be added in the future. If your platform isn't listed or you need a custom path, open an issue or contribute a PR!
 
 
 ---
