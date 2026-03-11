@@ -42,8 +42,18 @@ function parseArgs(argv) {
 // ── Help texts ─────────────────────────────────────────
 
 function printHelp() {
+  const logo = [
+    `         ${c('cyan', '[■]')}`,
+    `          ${c('cyan', '│')}`,
+    `  ${c('cyan', '┌───◎───┘')}   ${c('bold', ' ___| | __| |____')}`,
+    `  ${c('cyan', '│')}           ${c('bold', '/ __| |/ /| |_  /')}`,
+    ` ${c('cyan', '[ ]')}          ${c('bold', '\\__ \\   < | |/ /')} `,
+    `              ${c('bold', '|___/_|\\_\\|_/___|')}`,
+    `                          ${c('dim', `v${VERSION}`)}`,
+  ].join('\n');
+
   log(`
-${c('bold', 'sklz')} — Skill Manager v${VERSION}
+${logo}
 
 ${c('bold', 'USAGE')}
   sklz <command> [options]
@@ -52,7 +62,6 @@ ${c('bold', 'REPO COMMANDS')}
   ${c('cyan', 'repo add <url> [--as <name>]')}  Register a git repo as a skill source
   ${c('cyan', 'repo remove <name>')}             Remove a repo from registry
   ${c('cyan', 'repo list')}                      List registered repos
-  ${c('cyan', 'repo sync')}                      Pull latest from all repos
 
 ${c('bold', 'SKILL COMMANDS')}
   ${c('cyan', 'list [--tag <t>]')}               List available skills from repos
@@ -61,37 +70,6 @@ ${c('bold', 'SKILL COMMANDS')}
   ${c('cyan', 'update [name...]')}               Update installed skills (all or specific)
   ${c('cyan', 'uninstall <name>')}               Remove a skill from current project
   ${c('cyan', 'status')}                         Show skills installed in current project
-
-${c('bold', 'OPTIONS')}
-  ${c('cyan', '--tag <tag>')}                    Filter/install by tag
-  ${c('cyan', '--as <name>')}                    Alias for repo when adding
-  ${c('cyan', '-h, --help')}                     Show help
-  ${c('cyan', '-v, --version')}                  Show version
-
-${c('bold', 'EXAMPLES')}
-  ${c('dim', '# Register a skills repo')}
-  sklz repo add https://github.com/my-org/skills.git
-
-  ${c('dim', '# See what skills are available')}
-  sklz list
-
-  ${c('dim', '# Install a specific skill')}
-  sklz install button-spec
-
-  ${c('dim', '# Install all skills tagged "design-system"')}
-  sklz install --tag design-system
-
-  ${c('dim', '# Update all installed skills')}
-  sklz update
-
-${c('bold', 'REPO STRUCTURE')}
-  Skills can live at the repo root or inside a top-level ${c('dim', 'skills/')} subdirectory:
-    ${c('dim', 'my-repo/button-spec/SKILL.md')}
-    ${c('dim', 'my-repo/skills/button-spec/SKILL.md')}
-
-  Each skill directory must contain:
-    ${c('dim', 'SKILL.md')}  — Required. YAML frontmatter (name, description, metadata.version, metadata.tags) + instructions
-    ${c('dim', '...')}       — Any additional files
 `);
 }
 

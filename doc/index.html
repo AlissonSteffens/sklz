@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sklz — docs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        protocol: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                            950: '#0a0a0a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['JetBrains Mono', 'Menlo', 'monospace'],
+                        mono: ['JetBrains Mono', 'Menlo', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        :root { --bg-cutout: #f9fafb; }
+        .dark { --bg-cutout: #0a0a0a; }
+
+        .copy-btn { position: relative; }
+        .copy-btn .copied-label { display: none; }
+        .copy-btn.copied .copy-label { display: none; }
+        .copy-btn.copied .copied-label { display: inline; }
+    </style>
+</head>
+<body class="bg-protocol-50 text-protocol-900 dark:bg-protocol-950 dark:text-protocol-50 min-h-screen transition-colors duration-300 font-mono tracking-tight">
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-16 border-b border-protocol-200 dark:border-protocol-800 pb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 flex-shrink-0">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="70" y="10" width="20" height="20" fill="currentColor" />
+                        <rect x="10" y="70" width="20" height="20" stroke="currentColor" stroke-width="8" />
+                        <path d="M 80 30 L 80 50 L 20 50 L 20 70" stroke="currentColor" stroke-width="8" stroke-linejoin="miter" />
+                        <circle cx="50" cy="50" r="14" fill="var(--bg-cutout)" stroke="currentColor" stroke-width="8" />
+                        <circle cx="50" cy="50" r="5" fill="currentColor" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold uppercase tracking-widest">sklz <span class="text-protocol-500 font-normal text-base">docs</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/alissonsteffens/sklz" class="text-protocol-500 hover:text-protocol-900 dark:hover:text-white transition text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <button onclick="toggleTheme()" class="p-2 border border-protocol-200 dark:border-protocol-800 rounded-lg hover:bg-protocol-100 dark:hover:bg-protocol-900 transition">
+                    <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="mb-16">
+            <p class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest mb-3">npm, but for skills.</p>
+            <h2 class="text-3xl font-bold tracking-tight mb-4 leading-tight">
+                Stop copy-pasting skills<br>across your repos.
+            </h2>
+            <p class="text-protocol-600 dark:text-protocol-400 leading-relaxed max-w-2xl">
+                <strong class="text-protocol-900 dark:text-white">sklz</strong> is a CLI that manages agent skills like a package manager. Version only your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code> — run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync. Just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.
+            </p>
+            <div class="mt-4 inline-flex items-center gap-2 bg-protocol-100 dark:bg-protocol-800 border border-protocol-200 dark:border-protocol-700 px-3 py-1.5 text-xs text-protocol-500">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Early development — API may change
+            </div>
+        </section>
+
+        <!-- Install -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Install</h2>
+            <div class="bg-[#0a0a0a] border border-protocol-700 p-5 flex justify-between items-center group">
+                <pre class="text-white text-sm"><span class="text-protocol-500 select-none">$ </span>npm install -g @alissonsteffens/sklz</pre>
+                <button onclick="copyCode(this, 'npm install -g @alissonsteffens/sklz')" class="copy-btn text-protocol-500 hover:text-white transition text-xs uppercase tracking-widest flex items-center gap-2 ml-4 flex-shrink-0">
+                    <span class="copy-label">copy</span>
+                    <span class="copied-label text-green-400">copied</span>
+                </button>
+            </div>
+            <p class="mt-3 text-xs text-protocol-500">Requires Node.js &ge; 18 and <code class="bg-protocol-100 dark:bg-protocol-800 px-1">git</code> configured on your machine.</p>
+        </section>
+
+        <!-- Quick Start -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-6 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Quick Start</h2>
+
+            <div class="space-y-6">
+
+                <!-- Step 1 -->
+                <div class="flex gap-5">
+                    <div class="flex-shrink-0 w-7 h-7 border border-protocol-300 dark:border-protocol-700 flex items-center justify-center text-xs font-bold text-protocol-500">1</div>
+                    <div class="flex-1">
+                        <p class="font-bold mb-2 text-sm">Register a skills repository</p>
+                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">Any git repo that contains skill directories. Your org's private repo, a public one — anything you can clone.</p>
+                        <div class="bg-[#0a0a0a] border border-protocol-700 p-4 flex justify-between items-center">
+                            <pre class="text-white text-sm"><span class="text-protocol-500 select-none">$ </span>sklz repo add https://github.com/my-org/my-skills.git</pre>
+                            <button onclick="copyCode(this, 'sklz repo add https://github.com/my-org/my-skills.git')" class="copy-btn text-protocol-500 hover:text-white transition text-xs uppercase tracking-widest ml-4 flex-shrink-0">
+                                <span class="copy-label">copy</span>
+                                <span class="copied-label text-green-400">copied</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex gap-5">
+                    <div class="flex-shrink-0 w-7 h-7 border border-protocol-300 dark:border-protocol-700 flex items-center justify-center text-xs font-bold text-protocol-500">2</div>
+                    <div class="flex-1">
+                        <p class="font-bold mb-2 text-sm">Browse & install skills</p>
+                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">Search by name, description, or tag. Install one or many at once.</p>
+                        <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                            <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500 select-none">$ </span>sklz list
+<span class="text-protocol-500 select-none">$ </span>sklz search button
+<span class="text-protocol-500 select-none">$ </span>sklz install button-spec
+<span class="text-protocol-500 select-none">$ </span>sklz install --tag design-system</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex gap-5">
+                    <div class="flex-shrink-0 w-7 h-7 border border-protocol-300 dark:border-protocol-700 flex items-center justify-center text-xs font-bold text-protocol-500">3</div>
+                    <div class="flex-1">
+                        <p class="font-bold mb-2 text-sm">Commit only <code class="bg-protocol-100 dark:bg-protocol-800 px-1 font-normal">sklz.json</code></p>
+                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">Add the skills directory to your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">.gitignore</code>. Teammates run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync — just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.</p>
+                        <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                            <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500 select-none"># .gitignore</span>
+.agents/skills/
+
+<span class="text-protocol-500 select-none"># new teammate onboarding</span>
+<span class="text-protocol-500 select-none">$ </span>sklz install</pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Commands -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-6 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Commands</h2>
+
+            <div class="space-y-8">
+
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-protocol-500 mb-3 font-bold">Repositories</p>
+                    <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800">
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz repo add &lt;url&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Register a skills source</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz repo add &lt;url&gt; --as &lt;alias&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Register with a custom alias</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz repo list</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Show registered repos</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz repo sync</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Pull latest from all repos</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz repo remove &lt;name&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Remove a registered repo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-protocol-500 mb-3 font-bold">Skills</p>
+                    <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800">
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz list</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Browse all available skills</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz list --tag &lt;tag&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Filter by tag</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz search &lt;query&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Search by name, description, or tag</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz install &lt;name...&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install one or more skills</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz install --tag &lt;tag&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills with a tag</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz install</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills in sklz.json</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz update [name...]</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Update installed skills</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz uninstall &lt;name&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Remove a skill from project</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz status</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Show what's installed</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-6 border border-protocol-200 dark:border-protocol-800 p-4">
+                <p class="text-xs text-protocol-500 mb-2 font-bold uppercase tracking-widest">Disambiguation</p>
+                <p class="text-xs text-protocol-500 dark:text-protocol-400 mb-3">If two repos have a skill with the same name, prefix with the repo alias:</p>
+                <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                    <pre class="text-white text-sm"><span class="text-protocol-500 select-none">$ </span>sklz install design-skills/button-spec</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- sklz.json -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> sklz.json</h2>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4 leading-relaxed">This is the only file you commit. It tracks what's installed, from where, and at which commit.</p>
+            <div class="bg-[#0a0a0a] border border-protocol-700 p-5">
+                <pre class="text-white text-sm leading-relaxed">{
+  <span class="text-protocol-400">"sklz"</span>: {
+    <span class="text-protocol-400">"button-spec"</span>: {
+      <span class="text-protocol-400">"repo"</span>: <span class="text-green-400">"https://github.com/my-org/design-skills.git"</span>,
+      <span class="text-protocol-400">"repoName"</span>: <span class="text-green-400">"design-skills"</span>,
+      <span class="text-protocol-400">"version"</span>: <span class="text-green-400">"1.2.0"</span>,
+      <span class="text-protocol-400">"commit"</span>: <span class="text-green-400">"a1b2c3d"</span>,
+      <span class="text-protocol-400">"installedAt"</span>: <span class="text-green-400">"2026-03-10T14:30:00.000Z"</span>,
+      <span class="text-protocol-400">"tags"</span>: [<span class="text-green-400">"design-system"</span>, <span class="text-green-400">"ui"</span>]
+    }
+  }
+}</pre>
+            </div>
+        </section>
+
+        <!-- Platforms -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Supported Platforms</h2>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">Skills are installed to a platform-specific directory. Default works across most platforms.</p>
+            <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800">
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm bg-protocol-50 dark:bg-protocol-900">
+                    <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Platform</span>
+                    <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Skills directory</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                    <span class="font-bold">Default</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.agents/skills/</code>
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                    <span>GitHub Copilot</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.github/skills/</code>
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                    <span>Claude Code</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.claude/skills/</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills repo structure -->
+        <section class="mb-16">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Creating a Skills Repo</h2>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">A skills repo is a regular git repository. Skills can live at the root or inside a <code class="bg-protocol-100 dark:bg-protocol-800 px-1">skills/</code> subdirectory — sklz detects either layout automatically.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                    <p class="text-protocol-500 text-xs uppercase tracking-widest mb-3 font-bold">Root layout</p>
+                    <pre class="text-white text-xs leading-relaxed">my-skills-repo/
+├── button-spec/
+│   ├── SKILL.md
+│   └── templates/
+│       └── button.css
+├── react-patterns/
+│   └── SKILL.md
+└── ci-pipeline/
+    └── SKILL.md</pre>
+                </div>
+                <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                    <p class="text-protocol-500 text-xs uppercase tracking-widest mb-3 font-bold">skills/ layout</p>
+                    <pre class="text-white text-xs leading-relaxed">my-skills-repo/
+└── skills/
+    ├── button-spec/
+    │   ├── SKILL.md
+    │   └── templates/
+    │       └── button.css
+    ├── react-patterns/
+    │   └── SKILL.md
+    └── ci-pipeline/
+        └── SKILL.md</pre>
+                </div>
+            </div>
+
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-3">Each skill has a <code class="bg-protocol-100 dark:bg-protocol-800 px-1">SKILL.md</code> with frontmatter. <code class="bg-protocol-100 dark:bg-protocol-800 px-1">name</code> and <code class="bg-protocol-100 dark:bg-protocol-800 px-1">description</code> are required.</p>
+            <div class="bg-[#0a0a0a] border border-protocol-700 p-5">
+                <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500">---</span>
+<span class="text-protocol-400">name</span>: button-spec
+<span class="text-protocol-400">description</span>: Button component specification for the design system.
+<span class="text-protocol-400">metadata</span>:
+  <span class="text-protocol-400">version</span>: <span class="text-green-400">"1.2.0"</span>
+  <span class="text-protocol-400">tags</span>: design-system, ui, components
+<span class="text-protocol-500">---</span>
+
+Skill content goes here...</pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-protocol-200 dark:border-protocol-800 pt-8 flex justify-between items-center text-xs text-protocol-400">
+            <span>MIT License</span>
+            <a href="https://github.com/alissonsteffens/sklz" class="hover:text-protocol-900 dark:hover:text-white transition">github.com/alissonsteffens/sklz</a>
+        </footer>
+
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-protocol-900 text-protocol-50 dark:bg-white dark:text-protocol-900 px-5 py-3 shadow-2xl text-xs font-bold uppercase tracking-widest transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+        Copied
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function copyCode(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                setTimeout(() => btn.classList.remove('copied'), 2000);
+            }).catch(() => {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                btn.classList.add('copied');
+                setTimeout(() => btn.classList.remove('copied'), 2000);
+            });
+        }
+    </script>
+</body>
+</html>

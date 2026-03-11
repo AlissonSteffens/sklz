@@ -1,5 +1,14 @@
 # sklz
 
+```
+         [■]
+          │
+  ┌───◎───┘    ___| | __| |____
+  │           / __| |/ /| |_  /
+ [ ]          \__ \   < | |/ /
+              |___/_|\_\|_/___|
+```
+
 <!-- UNDER DEVELOPMENT -->
 > **sklz is in early development.** The API and features are not finalized. If you're interested in using or contributing, please reach out!
 
