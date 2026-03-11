@@ -1,8 +1,10 @@
+import { createRequire } from 'module';
 import { addRepo, removeRepo, listRepos, syncAllRepos } from './registry.js';
 import { listAvailableSkills, installSkills, updateSkills, uninstallSkill, statusSkills } from './skills.js';
 import { c, log, heading, error } from './utils.js';
 
-const VERSION = '1.0.0';
+const require = createRequire(import.meta.url);
+const { version: VERSION } = require('../package.json');
 
 // ── Argument parsing (zero deps) ───────────────────────
 
