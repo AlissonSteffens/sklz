@@ -1,0 +1,370 @@
+import { existsSync, readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, readdirSync, statSync } from 'node:fs';
+import { resolve, join, relative } from 'node:path';
+import { loadConfig } from './config.js';
+import { syncRepo, getCommitHash } from './git.js';
+import {
+  REPOS_DIR, SKILLS_JSON, SKILLS_INSTALL_DIR,
+  info, success, warn, error, heading, table, c, log,
+} from './utils.js';
+
+// ── Skills.json (project-level) ────────────────────────
+
+function loadSkillsJson(cwd) {
+  const p = resolve(cwd, SKILLS_JSON);
+  if (!existsSync(p)) return { skills: {} };
+  try {
+    return JSON.parse(readFileSync(p, 'utf-8'));
+  } catch {
+    return { skills: {} };
+  }
+}
+
+function saveSkillsJson(cwd, data) {
+  writeFileSync(resolve(cwd, SKILLS_JSON), JSON.stringify(data, null, 2) + '\n', 'utf-8');
+}
+
+// ── Skill discovery ────────────────────────────────────
+
+/**
+ * Parse YAML frontmatter from SKILL.md content.
+ * Returns a flat object with top-level keys and a nested `metadata` map.
+ */
+function parseFrontmatter(content) {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return null;
+
+  const fm = {};
+  const lines = match[1].split(/\r?\n/);
+  let inMetadata = false;
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    if (inMetadata && /^\s{2,}/.test(line)) {
+      const m = line.trim().match(/^([\w-]+):\s*"?([^"]*)"?\s*$/);
+      if (m) {
+        fm.metadata[m[1]] = m[2].trim();
+      }
+      continue;
+    }
+
+    inMetadata = false;
+    const m = line.match(/^([\w-]+):\s*(.*?)\s*$/);
+    if (m) {
+      if (m[1] === 'metadata') {
+        inMetadata = true;
+        fm.metadata = {};
+      } else {
+        fm[m[1]] = m[2].replace(/^["']|["']$/g, '');
+      }
+    }
+  }
+
+  return fm;
+}
+
+/**
+ * Read skill metadata from SKILL.md frontmatter.
+ */
+function readSkillMeta(skillDir) {
+  const skillMdPath = resolve(skillDir, 'SKILL.md');
+  if (!existsSync(skillMdPath)) return null;
+  try {
+    const content = readFileSync(skillMdPath, 'utf-8');
+    const fm = parseFrontmatter(content);
+    if (!fm || !fm.name) return null;
+
+    const meta = fm.metadata || {};
+    const tags = meta.tags
+      ? meta.tags.split(',').map(t => t.trim()).filter(Boolean)
+      : [];
+
+    return {
+      name: fm.name,
+      version: meta.version || '0.0.0',
+      description: fm.description || '',
+      tags,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Discover all skills across all registered repos.
+ * Returns: [{ name, version, description, tags, repoName, repoUrl, localPath }]
+ */
+export function discoverSkills({ sync = true } = {}) {
+  const config = loadConfig();
+  const skills = [];
+
+  for (const repo of config.repos) {
+    const repoPath = resolve(REPOS_DIR, repo.name);
+
+    if (sync) {
+      try {
+        syncRepo(repo.url, repo.name);
+      } catch {
+        warn(`Skipping ${repo.name} — could not sync`);
+        continue;
+      }
+    }
+
+    if (!existsSync(repoPath)) continue;
+
+    // Scan top-level directories for SKILL.md
+    const entries = readdirSync(repoPath);
+    for (const entry of entries) {
+      if (entry.startsWith('.')) continue;
+      const entryPath = resolve(repoPath, entry);
+      if (!statSync(entryPath).isDirectory()) continue;
+
+      const meta = readSkillMeta(entryPath);
+      if (!meta) continue;
+
+      skills.push({
+        name: meta.name || entry,
+        version: meta.version || '0.0.0',
+        description: meta.description || '',
+        tags: meta.tags || [],
+        repoName: repo.name,
+        repoUrl: repo.url,
+        localPath: entryPath,
+      });
+    }
+  }
+
+  return skills;
+}
+
+// ── List ────────────────────────────────────────────────
+
+export function listAvailableSkills({ tag, search } = {}) {
+  let skills = discoverSkills();
+
+  if (tag) {
+    const t = tag.toLowerCase();
+    skills = skills.filter(s => s.tags.some(st => st.toLowerCase().includes(t)));
+  }
+
+  if (search) {
+    const q = search.toLowerCase();
+    skills = skills.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.description.toLowerCase().includes(q) ||
+      s.tags.some(t => t.toLowerCase().includes(q))
+    );
+  }
+
+  heading('Available skills');
+  if (tag) log(c('dim', `  filtered by tag: ${tag}`));
+  if (search) log(c('dim', `  search: ${search}`));
+  log();
+
+  table(
+    ['Repo', 'Skill', 'Version', 'Tags'],
+    skills.map(s => [s.repoName, s.name, s.version, s.tags.join(', ')])
+  );
+  log();
+
+  return skills;
+}
+
+// ── Install ─────────────────────────────────────────────
+
+function copySkillToProject(skill, cwd) {
+  const destDir = resolve(cwd, SKILLS_INSTALL_DIR, skill.name);
+  mkdirSync(destDir, { recursive: true });
+
+  // Copy all files from skill source to destination
+  cpSync(skill.localPath, destDir, { recursive: true });
+
+  // Update skills.json
+  const sjData = loadSkillsJson(cwd);
+  const repoPath = resolve(REPOS_DIR, skill.repoName);
+
+  sjData.skills[skill.name] = {
+    repo: skill.repoUrl,
+    repoName: skill.repoName,
+    version: skill.version,
+    commit: getCommitHash(repoPath),
+    installedAt: new Date().toISOString(),
+    tags: skill.tags,
+  };
+  saveSkillsJson(cwd, sjData);
+}
+
+export function installSkills(names, { tag, cwd = process.cwd() } = {}) {
+  const allSkills = discoverSkills();
+
+  let toInstall = [];
+
+  if (tag) {
+    const t = tag.toLowerCase();
+    toInstall = allSkills.filter(s => s.tags.some(st => st.toLowerCase().includes(t)));
+    if (toInstall.length === 0) {
+      warn(`No skills found with tag "${tag}"`);
+      return;
+    }
+  } else if (names && names.length > 0) {
+    for (const nameArg of names) {
+      // Support "repoName/skillName" syntax
+      let repoFilter = null;
+      let skillName = nameArg;
+
+      if (nameArg.includes('/')) {
+        const parts = nameArg.split('/');
+        repoFilter = parts[0];
+        skillName = parts[1];
+      }
+
+      const match = allSkills.find(s => {
+        const nameMatch = s.name === skillName;
+        const repoMatch = repoFilter ? s.repoName === repoFilter : true;
+        return nameMatch && repoMatch;
+      });
+
+      if (match) {
+        toInstall.push(match);
+      } else {
+        warn(`Skill not found: ${nameArg}`);
+      }
+    }
+  } else {
+    error('Specify skill names or use --tag <tag>');
+    return;
+  }
+
+  if (toInstall.length === 0) {
+    warn('No skills to install');
+    return;
+  }
+
+  heading(`Installing ${toInstall.length} skill(s)...`);
+  log();
+
+  for (const skill of toInstall) {
+    info(`Installing ${c('bold', skill.name)} (${skill.version}) from ${skill.repoName}`);
+    try {
+      copySkillToProject(skill, cwd);
+      success(`Installed ${skill.name} → ${SKILLS_INSTALL_DIR}/${skill.name}/`);
+    } catch (e) {
+      error(`Failed to install ${skill.name}: ${e.message}`);
+    }
+  }
+  log();
+}
+
+// ── Update ──────────────────────────────────────────────
+
+export function updateSkills(names, { cwd = process.cwd() } = {}) {
+  const sjData = loadSkillsJson(cwd);
+  const installed = Object.keys(sjData.skills);
+
+  if (installed.length === 0) {
+    warn('No skills installed in this project. Run "sklz install <name>" first.');
+    return;
+  }
+
+  const toUpdate = names && names.length > 0
+    ? names.filter(n => {
+        if (!sjData.skills[n]) {
+          warn(`Skill "${n}" is not installed — skipping`);
+          return false;
+        }
+        return true;
+      })
+    : installed;
+
+  if (toUpdate.length === 0) return;
+
+  // Re-sync repos and discover latest
+  const allSkills = discoverSkills({ sync: true });
+
+  heading(`Updating ${toUpdate.length} skill(s)...`);
+  log();
+
+  let updated = 0;
+  for (const name of toUpdate) {
+    const entry = sjData.skills[name];
+    const latest = allSkills.find(s => s.name === name && s.repoUrl === entry.repo);
+
+    if (!latest) {
+      warn(`Skill "${name}" no longer found in repo ${entry.repoName} — skipping`);
+      continue;
+    }
+
+    const repoPath = resolve(REPOS_DIR, latest.repoName);
+    const newCommit = getCommitHash(repoPath);
+
+    if (newCommit === entry.commit && latest.version === entry.version) {
+      info(`${name} is already up to date (${entry.version} @ ${entry.commit})`);
+      continue;
+    }
+
+    info(`Updating ${c('bold', name)}: ${entry.version}@${entry.commit} → ${latest.version}@${newCommit}`);
+    try {
+      copySkillToProject(latest, cwd);
+      success(`Updated ${name}`);
+      updated++;
+    } catch (e) {
+      error(`Failed to update ${name}: ${e.message}`);
+    }
+  }
+
+  log();
+  if (updated > 0) {
+    success(`${updated} skill(s) updated`);
+  } else {
+    info('All skills are up to date');
+  }
+  log();
+}
+
+// ── Uninstall ───────────────────────────────────────────
+
+export function uninstallSkill(name, { cwd = process.cwd() } = {}) {
+  const sjData = loadSkillsJson(cwd);
+
+  if (!sjData.skills[name]) {
+    error(`Skill "${name}" is not installed in this project`);
+    return;
+  }
+
+  const skillDir = resolve(cwd, SKILLS_INSTALL_DIR, name);
+  if (existsSync(skillDir)) {
+    rmSync(skillDir, { recursive: true, force: true });
+  }
+
+  delete sjData.skills[name];
+  saveSkillsJson(cwd, sjData);
+  success(`Uninstalled ${c('bold', name)}`);
+}
+
+// ── Status ──────────────────────────────────────────────
+
+export function statusSkills({ cwd = process.cwd() } = {}) {
+  const sjData = loadSkillsJson(cwd);
+  const installed = Object.entries(sjData.skills);
+
+  heading('Installed skills in this project');
+  log();
+
+  if (installed.length === 0) {
+    log(c('dim', '  No skills installed. Run "sklz install <name>" to install.'));
+    log();
+    return;
+  }
+
+  table(
+    ['Skill', 'Version', 'Repo', 'Commit', 'Installed'],
+    installed.map(([name, meta]) => [
+      name,
+      meta.version,
+      meta.repoName,
+      meta.commit,
+      meta.installedAt?.slice(0, 10) || '—',
+    ])
+  );
+  log();
+}

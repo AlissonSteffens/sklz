@@ -1,0 +1,161 @@
+# sklz
+
+<!-- UNDER DEVELOPMENT -->
+> **sklz is in early development.** The API and features are not finalized. If you're interested in using or contributing, please reach out!
+
+**npm, but for skills.**
+
+You don't copy-paste components across all your repositories. You don't manually track changes and propagate them to every project that uses them. You use npm.
+
+**sklz** brings the same philosophy to agent skills. Skills are libraries — it doesn't make sense to version them inside every repo, duplicating files and polluting your git history. Version only your `skills.json` and run `sklz install` to get all your dependencies. Done.
+
+```bash
+npm install -g sklz
+```
+
+```bash
+# Register a skills repository
+sklz repo add https://github.com/my-org/design-skills.git
+
+# Install a skill
+sklz install button-spec
+
+# Install all skills tagged "design-system"
+sklz install --tag design-system
+
+# Update everything
+sklz update
+```
+
+Add `.github/skills/` to your `.gitignore`. Commit only `skills.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
+
+---
+
+## Why
+
+Today, most teams manage agent skills by copying `SKILL.md` files into their repos. This works until:
+
+- You have 10 repos using the same skill and need to update it
+- Someone changes a skill in one repo and forgets the other 9
+- Your git history is full of diffs from skill files nobody wrote by hand
+- New team members have to figure out which skills to copy from where
+
+You already solved this problem for code with package managers. **sklz** solves it for skills.
+
+---
+
+## How it works
+
+1. You register git repos that contain skills (your org's, open source, whatever)
+2. sklz clones them locally and keeps them synced via `git pull`
+3. When you install a skill, it copies the files to `.github/skills/<name>/`
+4. A `skills.json` in your project root tracks what's installed, from where, and at which commit
+
+No databases. No APIs. Just git and files. Uses the `git` already configured on your machine — if you can clone the repo, sklz can use it.
+
+---
+
+## Commands
+
+### Repositories
+
+```bash
+sklz repo add <url> [--as <alias>]   # Register a skills source
+sklz repo remove <name>              # Remove from registry
+sklz repo list                       # Show registered repos
+sklz repo sync                       # Pull latest from all repos
+```
+
+### Skills
+
+```bash
+sklz list [--tag <tag>]              # Browse available skills
+sklz search <query>                  # Search by name, description, or tag
+sklz install <name...>               # Install specific skill(s)
+sklz install --tag <tag>             # Install all skills matching a tag
+sklz update [name...]                # Update installed skills
+sklz uninstall <name>                # Remove a skill from project
+sklz status                          # Show what's installed
+```
+
+### Disambiguation
+
+If two repos have a skill with the same name:
+
+```bash
+sklz install design-skills/button-spec
+```
+
+---
+
+## skills.json
+
+This is the only file you commit. It looks like this:
+
+```json
+{
+  "skills": {
+    "button-spec": {
+      "repo": "https://github.com/my-org/design-skills.git",
+      "repoName": "design-skills",
+      "version": "1.2.0",
+      "commit": "a1b2c3d",
+      "installedAt": "2026-03-10T14:30:00.000Z",
+      "tags": ["design-system", "ui"]
+    }
+  }
+}
+```
+
+Your `.gitignore`:
+
+```
+.github/skills/
+```
+
+New dev joins the team? They run `sklz install` and everything is there.
+
+---
+
+## Skills repo structure
+
+A skills repo is a regular git repository. Each top-level directory with a `SKILL.md` file is a skill:
+
+```
+my-skills-repo/
+├── button-spec/
+│   ├── SKILL.md
+│   └── templates/
+│       └── button.css
+├── react-patterns/
+│   └── SKILL.md
+└── ci-pipeline/
+    └── SKILL.md
+```
+
+### SKILL.md frontmatter
+
+Skill metadata is declared in the `SKILL.md` frontmatter. `name` and `description` are required. Use `metadata.version` for versioning and `metadata.tags` (comma-separated) for tag-based filtering.
+
+```markdown
+---
+name: button-spec
+description: Button component specification for the design system. Use when working with button components.
+metadata:
+  version: "1.2.0"
+  tags: design-system, ui, components
+---
+```
+
+---
+
+## Requirements
+
+- Node.js >= 18
+- `git` configured with access to your repos (SSH keys, tokens, whatever you already use)
+
+---
+
+## License
+
+MIT
