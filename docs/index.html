@@ -151,10 +151,10 @@
                     <div class="flex-shrink-0 w-7 h-7 border border-protocol-300 dark:border-protocol-700 flex items-center justify-center text-xs font-bold text-protocol-500">3</div>
                     <div class="flex-1">
                         <p class="font-bold mb-2 text-sm">Commit only <code class="bg-protocol-100 dark:bg-protocol-800 px-1 font-normal">sklz.json</code></p>
-                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">Add the skills directory to your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">.gitignore</code>. Teammates run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync — just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.</p>
+                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">On first install, sklz asks which tool you're using and saves it to <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>. Add the skills directory to your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">.gitignore</code>. Teammates run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync — just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.</p>
                         <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
-                            <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500 select-none"># .gitignore</span>
-.agents/skills/
+                            <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500 select-none"># .gitignore  (example: Claude Code)</span>
+.claude/skills/
 
 <span class="text-protocol-500 select-none"># new teammate onboarding</span>
 <span class="text-protocol-500 select-none">$ </span>sklz install</pre>
@@ -214,7 +214,11 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install &lt;name...&gt;</code>
-                            <span class="text-protocol-500 dark:text-protocol-400">Install one or more skills</span>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install skills (prompts vendor on first run)</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                            <code class="text-protocol-900 dark:text-white">sklz install &lt;name...&gt; --vendor &lt;v&gt;</code>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install to a specific vendor</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install --tag &lt;tag&gt;</code>
@@ -253,9 +257,10 @@
         <!-- sklz.json -->
         <section class="mb-16">
             <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> sklz.json</h2>
-            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4 leading-relaxed">This is the only file you commit. It tracks what's installed, from where, and at which commit.</p>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4 leading-relaxed">This is the only file you commit. It records the vendor (where skills are installed) and tracks what's installed, from where, and at which commit.</p>
             <div class="bg-[#0a0a0a] border border-protocol-700 p-5">
                 <pre class="text-white text-sm leading-relaxed">{
+  <span class="text-protocol-400">"vendor"</span>: <span class="text-green-400">"Claude Code"</span>,
   <span class="text-protocol-400">"sklz"</span>: {
     <span class="text-protocol-400">"button-spec"</span>: {
       <span class="text-protocol-400">"repo"</span>: <span class="text-green-400">"https://github.com/my-org/design-skills.git"</span>,
@@ -270,27 +275,38 @@
             </div>
         </section>
 
-        <!-- Platforms -->
+        <!-- Vendors -->
         <section class="mb-16">
-            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Supported Platforms</h2>
-            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">Skills are installed to a platform-specific directory. Default works across most platforms.</p>
-            <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800">
+            <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Vendors</h2>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">On first install, sklz asks which tool you're using and saves the choice to <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>. You can also pass <code class="bg-protocol-100 dark:bg-protocol-800 px-1">--vendor</code> to skip the prompt.</p>
+            <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800 mb-4">
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm bg-protocol-50 dark:bg-protocol-900">
-                    <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Platform</span>
+                    <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Vendor</span>
                     <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Skills directory</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm">
-                    <span class="font-bold">Default</span>
-                    <code class="text-protocol-600 dark:text-protocol-400">.agents/skills/</code>
+                    <span class="font-bold">Claude Code <span class="text-protocol-400 font-normal text-xs">(default)</span></span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.claude/skills/</code>
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                     <span>GitHub Copilot</span>
                     <code class="text-protocol-600 dark:text-protocol-400">.github/skills/</code>
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm">
-                    <span>Claude Code</span>
-                    <code class="text-protocol-600 dark:text-protocol-400">.claude/skills/</code>
+                    <span>Google Antigravity</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.agents/skills/</code>
                 </div>
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                    <span>Cursor</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.cursor/skills/</code>
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4 text-sm">
+                    <span>Custom</span>
+                    <code class="text-protocol-600 dark:text-protocol-400">.skills/</code>
+                </div>
+            </div>
+            <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
+                <pre class="text-white text-sm"><span class="text-protocol-500 select-none">$ </span>sklz install my-skill --vendor "GitHub Copilot"</pre>
             </div>
         </section>
 

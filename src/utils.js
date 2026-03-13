@@ -8,7 +8,28 @@ export const SKLZ_HOME = resolve(homedir(), '.sklz');
 export const REPOS_DIR = resolve(SKLZ_HOME, 'repos');
 export const CONFIG_FILE = resolve(SKLZ_HOME, 'config.json');
 export const SKILLS_JSON = 'sklz.json';
-export const SKILLS_INSTALL_DIR = '.agents/skills';
+
+// ── Vendors ────────────────────────────────────────────
+
+export const VENDORS = [
+  { name: 'Claude Code',         dir: '.claude' },
+  { name: 'GitHub Copilot',      dir: '.github' },
+  { name: 'Google Antigravity',  dir: '.agents' },
+  { name: 'Cursor',              dir: '.cursor' },
+  { name: 'Custom',              dir: '.skills' },
+];
+
+export const DEFAULT_VENDOR = 'Claude Code';
+
+export function getVendorByName(name) {
+  const v = VENDORS.find(v => v.name.toLowerCase() === name.toLowerCase());
+  return v || null;
+}
+
+export function skillsInstallDir(vendorName) {
+  const v = getVendorByName(vendorName) || getVendorByName(DEFAULT_VENDOR);
+  return `${v.dir}/skills`;
+}
 
 export function ensureSklzHome() {
   if (!existsSync(SKLZ_HOME)) mkdirSync(SKLZ_HOME, { recursive: true });

@@ -1,9 +1,10 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, readdirSync, statSync } from 'node:fs';
-import { resolve, join, relative } from 'node:path';
+import { resolve } from 'node:path';
+import { createInterface } from 'node:readline';
 import { loadConfig } from './config.js';
 import { syncRepo, getCommitHash } from './git.js';
 import {
-  REPOS_DIR, SKILLS_JSON, SKILLS_INSTALL_DIR,
+  REPOS_DIR, SKILLS_JSON, VENDORS, DEFAULT_VENDOR, getVendorByName, skillsInstallDir,
   info, success, warn, error, heading, table, c, log,
 } from './utils.js';
 
@@ -11,11 +12,13 @@ import {
 
 function loadSkillsJson(cwd) {
   const p = resolve(cwd, SKILLS_JSON);
-  if (!existsSync(p)) return { sklz: {} };
+  if (!existsSync(p)) return { vendor: null, sklz: {} };
   try {
-    return JSON.parse(readFileSync(p, 'utf-8'));
+    const data = JSON.parse(readFileSync(p, 'utf-8'));
+    if (!data.sklz) data.sklz = {};
+    return data;
   } catch {
-    return { sklz: {} };
+    return { vendor: null, sklz: {} };
   }
 }
 
@@ -176,19 +179,44 @@ export function listAvailableSkills({ tag, search } = {}) {
   return skills;
 }
 
+// ── Vendor prompt ───────────────────────────────────────
+
+async function promptVendor() {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+  log(`\n${c('bold', 'Choose a vendor')} ${c('dim', '(where skills will be installed):')}\n`);
+  VENDORS.forEach((v, i) => {
+    const num = c('cyan', `${i + 1}.`);
+    const dflt = i === 0 ? c('dim', '  (default)') : '';
+    log(`  ${num} ${v.name}${dflt}  ${c('dim', v.dir + '/skills/')}`);
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`\n  Enter number [1]: `, (answer) => {
+      rl.close();
+      const n = parseInt(answer, 10);
+      if (!answer.trim() || isNaN(n) || n < 1 || n > VENDORS.length) {
+        resolve(DEFAULT_VENDOR);
+      } else {
+        resolve(VENDORS[n - 1].name);
+      }
+    });
+  });
+}
+
 // ── Install ─────────────────────────────────────────────
 
-function copySkillToProject(skill, cwd) {
-  const destDir = resolve(cwd, SKILLS_INSTALL_DIR, skill.name);
+function copySkillToProject(skill, vendorName, cwd) {
+  const installDir = skillsInstallDir(vendorName);
+  const destDir = resolve(cwd, installDir, skill.name);
   mkdirSync(destDir, { recursive: true });
 
-  // Copy all files from skill source to destination
   cpSync(skill.localPath, destDir, { recursive: true });
 
-  // Update skills.json
   const sjData = loadSkillsJson(cwd);
   const repoPath = resolve(REPOS_DIR, skill.repoName);
 
+  sjData.vendor = vendorName;
   sjData.sklz[skill.name] = {
     repo: skill.repoUrl,
     repoName: skill.repoName,
@@ -198,9 +226,11 @@ function copySkillToProject(skill, cwd) {
     tags: skill.tags,
   };
   saveSkillsJson(cwd, sjData);
+
+  return installDir;
 }
 
-export function installSkills(names, { tag, cwd = process.cwd() } = {}) {
+export async function installSkills(names, { tag, vendor: vendorFlag, cwd = process.cwd() } = {}) {
   const allSkills = discoverSkills();
 
   let toInstall = [];
@@ -214,7 +244,6 @@ export function installSkills(names, { tag, cwd = process.cwd() } = {}) {
     }
   } else if (names && names.length > 0) {
     for (const nameArg of names) {
-      // Support "repoName/skillName" syntax
       let repoFilter = null;
       let skillName = nameArg;
 
@@ -246,14 +275,36 @@ export function installSkills(names, { tag, cwd = process.cwd() } = {}) {
     return;
   }
 
-  heading(`Installing ${toInstall.length} skill(s)...`);
+  // Resolve vendor: flag > sklz.json > interactive prompt > default
+  const sjData = loadSkillsJson(cwd);
+  let vendorName;
+
+  if (vendorFlag) {
+    const v = getVendorByName(vendorFlag);
+    if (!v) {
+      const names = VENDORS.map(v => `"${v.name}"`).join(', ');
+      error(`Unknown vendor "${vendorFlag}". Available: ${names}`);
+      return;
+    }
+    vendorName = v.name;
+  } else if (sjData.vendor) {
+    vendorName = sjData.vendor;
+  } else if (process.stdout.isTTY) {
+    vendorName = await promptVendor();
+  } else {
+    vendorName = DEFAULT_VENDOR;
+  }
+
+  const installDir = skillsInstallDir(vendorName);
+
+  heading(`Installing ${toInstall.length} skill(s) → ${c('cyan', installDir + '/')}...`);
   log();
 
   for (const skill of toInstall) {
     info(`Installing ${c('bold', skill.name)} (${skill.version}) from ${skill.repoName}`);
     try {
-      copySkillToProject(skill, cwd);
-      success(`Installed ${skill.name} → ${SKILLS_INSTALL_DIR}/${skill.name}/`);
+      copySkillToProject(skill, vendorName, cwd);
+      success(`Installed ${skill.name} → ${installDir}/${skill.name}/`);
     } catch (e) {
       error(`Failed to install ${skill.name}: ${e.message}`);
     }
@@ -310,7 +361,7 @@ export function updateSkills(names, { cwd = process.cwd() } = {}) {
 
     info(`Updating ${c('bold', name)}: ${entry.version}@${entry.commit} → ${latest.version}@${newCommit}`);
     try {
-      copySkillToProject(latest, cwd);
+      copySkillToProject(latest, sjData.vendor || DEFAULT_VENDOR, cwd);
       success(`Updated ${name}`);
       updated++;
     } catch (e) {
@@ -355,6 +406,12 @@ export function statusSkills({ cwd = process.cwd() } = {}) {
 
   heading('Installed skills in this project');
   log();
+
+  if (sjData.vendor) {
+    const vendorDir = skillsInstallDir(sjData.vendor);
+    log(`  ${c('dim', 'vendor:')} ${sjData.vendor}  ${c('dim', vendorDir + '/')}`);
+    log();
+  }
 
   if (installed.length === 0) {
     log(c('dim', '  No skills installed. Run "sklz install <name>" to install.'));

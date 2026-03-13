@@ -36,7 +36,7 @@ sklz install --tag design-system
 sklz update
 ```
 
-Add `.agents/skills/` to your `.gitignore`. Commit only `sklz.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
+On first install, sklz asks which tool you're using and saves it to `sklz.json`. Commit only `sklz.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
 
 ---
 
@@ -63,17 +63,23 @@ No databases. No APIs. Just git and files. Uses the `git` already configured on 
 
 ---
 
-## Supported platforms
+## Vendors
 
-By default, sklz installs skills to `.agents/skills/`. Different platforms use different directories:
+When you first run `sklz install` in a project, sklz asks which tool you're using and saves the choice to `sklz.json`. You can also pass `--vendor` directly to skip the prompt.
 
-| Platform | Skills directory |
+| Vendor | Skills directory |
 |---|---|
+| **Claude Code** _(default)_ | `.claude/skills/` |
 | GitHub Copilot | `.github/skills/` |
-| Claude Code | `.claude/skills/` |
-| Antigravity | `.agents/skills/` |
+| Google Antigravity | `.agents/skills/` |
+| Cursor | `.cursor/skills/` |
+| Custom | `.skills/` |
 
-`.agents/skills/` is currently the default and works across most platforms. Platform-specific install paths may be added in the future. If your platform isn't listed or you need a custom path, open an issue or contribute a PR!
+```bash
+sklz install my-skill --vendor "GitHub Copilot"
+```
+
+The vendor is saved in `sklz.json` — subsequent installs in the same project reuse it automatically.
 
 
 ---
@@ -94,11 +100,12 @@ sklz repo sync                       # Pull latest from all repos
 ```bash
 sklz list [--tag <tag>]              # Browse available skills
 sklz search <query>                  # Search by name, description, or tag
-sklz install <name...>               # Install specific skill(s)
-sklz install --tag <tag>             # Install all skills matching a tag
-sklz update [name...]                # Update installed skills
-sklz uninstall <name>                # Remove a skill from project
-sklz status                          # Show what's installed
+sklz install <name...>                         # Install (prompts vendor on first run)
+sklz install <name...> --vendor "Claude Code"  # Install to a specific vendor
+sklz install --tag <tag>                       # Install all skills matching a tag
+sklz update [name...]                          # Update installed skills
+sklz uninstall <name>                          # Remove a skill from project
+sklz status                                    # Show installed skills + vendor
 ```
 
 ### Disambiguation
@@ -117,6 +124,7 @@ This is the only file you commit. It looks like this:
 
 ```json
 {
+  "vendor": "Claude Code",
   "sklz": {
     "button-spec": {
       "repo": "https://github.com/my-org/design-skills.git",
@@ -130,10 +138,10 @@ This is the only file you commit. It looks like this:
 }
 ```
 
-Your `.gitignore`:
+Your `.gitignore` (example for Claude Code):
 
 ```
-.agents/skills/
+.claude/skills/
 ```
 
 New dev joins the team? They run `sklz install` and everything is there.

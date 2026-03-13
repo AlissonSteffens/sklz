@@ -66,7 +66,7 @@ ${c('bold', 'REPO COMMANDS')}
 ${c('bold', 'SKILL COMMANDS')}
   ${c('cyan', 'list [--tag <t>]')}               List available skills from repos
   ${c('cyan', 'search <query>')}                 Search skills by name/description/tag
-  ${c('cyan', 'install <n...> [--tag <t>]')}     Install skill(s) into current project
+  ${c('cyan', 'install <n...> [--tag <t>] [--vendor <v>]')}  Install skill(s) into current project
   ${c('cyan', 'update [name...]')}               Update installed skills (all or specific)
   ${c('cyan', 'uninstall <name>')}               Remove a skill from current project
   ${c('cyan', 'status')}                         Show skills installed in current project
@@ -75,7 +75,7 @@ ${c('bold', 'SKILL COMMANDS')}
 
 // ── Command router ─────────────────────────────────────
 
-export function run(argv) {
+export async function run(argv) {
   const { _, flags } = parseArgs(argv);
 
   if (flags.v || flags.version) {
@@ -151,7 +151,7 @@ export function run(argv) {
     case 'install':
     case 'i': {
       const names = _.slice(1);
-      installSkills(names.length > 0 ? names : null, { tag: flags.tag });
+      await installSkills(names.length > 0 ? names : null, { tag: flags.tag, vendor: flags.vendor });
       break;
     }
 
