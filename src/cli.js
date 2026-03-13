@@ -73,6 +73,28 @@ ${c('bold', 'SKILL COMMANDS')}
 `);
 }
 
+// ── Update check ───────────────────────────────────────
+
+async function fetchLatestVersion() {
+  try {
+    const res = await fetch('https://registry.npmjs.org/@alissonsteffens/sklz/latest');
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.version || null;
+  } catch {
+    return null;
+  }
+}
+
+function isNewerVersion(latest, current) {
+  const parse = v => v.split('.').map(Number);
+  const [lMaj, lMin, lPat] = parse(latest);
+  const [cMaj, cMin, cPat] = parse(current);
+  if (lMaj !== cMaj) return lMaj > cMaj;
+  if (lMin !== cMin) return lMin > cMin;
+  return lPat > cPat;
+}
+
 // ── Command router ─────────────────────────────────────
 
 export async function run(argv) {
@@ -87,6 +109,8 @@ export async function run(argv) {
     printHelp();
     return;
   }
+
+  const updateCheckPromise = fetchLatestVersion();
 
   const cmd = _[0];
   const sub = _[1];
@@ -185,5 +209,11 @@ export async function run(argv) {
     default:
       error(`Unknown command: ${cmd}`);
       printHelp();
+  }
+
+  const latest = await updateCheckPromise;
+  if (latest && isNewerVersion(latest, VERSION)) {
+    log(`\n${c('yellow', '↑')} New version available: ${c('dim', VERSION)} → ${c('bold', latest)}`);
+    log(c('dim', `  npm install -g @alissonsteffens/sklz`));
   }
 }
