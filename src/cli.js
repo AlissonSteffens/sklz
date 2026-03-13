@@ -66,7 +66,7 @@ ${c('bold', 'REPO COMMANDS')}
 ${c('bold', 'SKILL COMMANDS')}
   ${c('cyan', 'list [--tag <t>]')}               List available skills from repos
   ${c('cyan', 'search <query>')}                 Search skills by name/description/tag
-  ${c('cyan', 'install <n...> [--tag <t>] [--vendor <v>]')}  Install skill(s) into current project
+  ${c('cyan', 'install [n...] [--tag <t>] [--vendor <v>]')}  Install skill(s) — no args installs all from sklz.json
   ${c('cyan', 'update [name...]')}               Update installed skills (all or specific)
   ${c('cyan', 'uninstall <name>')}               Remove a skill from current project
   ${c('cyan', 'status')}                         Show skills installed in current project

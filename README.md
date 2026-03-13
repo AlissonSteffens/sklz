@@ -36,7 +36,7 @@ sklz install --tag design-system
 sklz update
 ```
 
-On first install, sklz asks which tool you're using and saves it to `sklz.json`. Commit only `sklz.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`.
+Commit only `sklz.json`. Your teammates run `sklz install` and they're in sync — just like `npm install`. On first install in a project, sklz asks which tool you're using (or detects it automatically).
 
 ---
 
@@ -65,7 +65,7 @@ No databases. No APIs. Just git and files. Uses the `git` already configured on 
 
 ## Vendors
 
-When you first run `sklz install` in a project, sklz asks which tool you're using and saves the choice to `sklz.json`. You can also pass `--vendor` directly to skip the prompt.
+When you run `sklz install`, sklz asks which tool you're using and installs the skills to the right directory. You can also pass `--vendor` directly to skip the prompt. The vendor choice is not stored — you pick it each time you install.
 
 | Vendor | Skills directory |
 |---|---|
@@ -78,8 +78,6 @@ When you first run `sklz install` in a project, sklz asks which tool you're usin
 ```bash
 sklz install my-skill --vendor "GitHub Copilot"
 ```
-
-The vendor is saved in `sklz.json` — subsequent installs in the same project reuse it automatically.
 
 
 ---
@@ -100,12 +98,13 @@ sklz repo sync                       # Pull latest from all repos
 ```bash
 sklz list [--tag <tag>]              # Browse available skills
 sklz search <query>                  # Search by name, description, or tag
-sklz install <name...>                         # Install (prompts vendor on first run)
+sklz install                                   # Install all skills from sklz.json
+sklz install <name...>                         # Install specific skill(s)
 sklz install <name...> --vendor "Claude Code"  # Install to a specific vendor
 sklz install --tag <tag>                       # Install all skills matching a tag
 sklz update [name...]                          # Update installed skills
 sklz uninstall <name>                          # Remove a skill from project
-sklz status                                    # Show installed skills + vendor
+sklz status                                    # Show installed skills and their locations
 ```
 
 ### Disambiguation
@@ -124,7 +123,6 @@ This is the only file you commit. It looks like this:
 
 ```json
 {
-  "vendor": "Claude Code",
   "sklz": {
     "button-spec": {
       "repo": "https://github.com/my-org/design-skills.git",

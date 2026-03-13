@@ -214,7 +214,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install &lt;name...&gt;</code>
-                            <span class="text-protocol-500 dark:text-protocol-400">Install skills (prompts vendor on first run)</span>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install skills (prompts vendor each time)</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install &lt;name...&gt; --vendor &lt;v&gt;</code>
@@ -226,7 +226,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install</code>
-                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills in sklz.json</span>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills from sklz.json (like npm install)</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz update [name...]</code>
@@ -257,10 +257,9 @@
         <!-- sklz.json -->
         <section class="mb-16">
             <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> sklz.json</h2>
-            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4 leading-relaxed">This is the only file you commit. It records the vendor (where skills are installed) and tracks what's installed, from where, and at which commit.</p>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4 leading-relaxed">This is the only file you commit. It tracks what's installed, from where, and at which commit. The vendor (where skills are installed) is chosen at install time and is not stored here.</p>
             <div class="bg-[#0a0a0a] border border-protocol-700 p-5">
                 <pre class="text-white text-sm leading-relaxed">{
-  <span class="text-protocol-400">"vendor"</span>: <span class="text-green-400">"Claude Code"</span>,
   <span class="text-protocol-400">"sklz"</span>: {
     <span class="text-protocol-400">"button-spec"</span>: {
       <span class="text-protocol-400">"repo"</span>: <span class="text-green-400">"https://github.com/my-org/design-skills.git"</span>,
@@ -278,7 +277,7 @@
         <!-- Vendors -->
         <section class="mb-16">
             <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Vendors</h2>
-            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">On first install, sklz asks which tool you're using and saves the choice to <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>. You can also pass <code class="bg-protocol-100 dark:bg-protocol-800 px-1">--vendor</code> to skip the prompt.</p>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">At install time, sklz asks which tool you're using and copies skills to the right directory. You can also pass <code class="bg-protocol-100 dark:bg-protocol-800 px-1">--vendor</code> to skip the prompt. The choice is not stored in <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>.</p>
             <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800 mb-4">
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm bg-protocol-50 dark:bg-protocol-900">
                     <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Vendor</span>
