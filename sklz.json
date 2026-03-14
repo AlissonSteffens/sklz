@@ -1,19 +1,19 @@
 {
   "sklz": {
     "flexoki": {
-      "repo": "https://github.com/AlissonSteffens/alisson-skils",
-      "repoName": "alisson-skils",
+      "repo": "https://github.com/AlissonSteffens/alisson-skills.git",
+      "repoName": "alisson-skills",
       "version": "0.0.0",
       "commit": "9b56351",
-      "installedAt": "2026-03-13T23:04:01.209Z",
+      "installedAt": "2026-03-14T03:12:13.574Z",
       "tags": []
     },
     "jobimfy": {
-      "repo": "https://github.com/AlissonSteffens/alisson-skils",
-      "repoName": "alisson-skils",
+      "repo": "https://github.com/AlissonSteffens/alisson-skills.git",
+      "repoName": "alisson-skills",
       "version": "0.0.0",
       "commit": "9b56351",
-      "installedAt": "2026-03-13T23:04:01.241Z",
+      "installedAt": "2026-03-14T03:12:13.600Z",
       "tags": []
     }
   }

@@ -1,11 +1,11 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, cpSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { loadConfig } from './config.js';
+import { loadConfig, saveConfig } from './config.js';
 import { syncRepo, getCommitHash } from './git.js';
 import {
   REPOS_DIR, SKILLS_JSON, VENDORS, DEFAULT_VENDOR, getVendorByName, skillsInstallDir,
-  info, success, warn, error, heading, table, c, log,
+  repoNameFromUrl, info, success, warn, error, heading, table, c, log,
 } from './utils.js';
 
 // ── sklz.json (project-level) ──────────────────────────
@@ -290,8 +290,45 @@ export async function installSkills(names, { tag, vendor: vendorFlag, cwd = proc
       warn('No skills in sklz.json and no names given. Run "sklz install <name>" to install.');
       return;
     }
+
+    // Auto-register repos referenced in sklz.json but not yet in global config
+    const config = loadConfig();
+    const registeredUrls = new Set(config.repos.map(r => r.url));
+    const failedRepos = new Set();
+
+    const referencedRepos = new Map(); // url → repoName
+    for (const meta of Object.values(sjData.sklz)) {
+      if (meta.repo && !referencedRepos.has(meta.repo)) {
+        referencedRepos.set(meta.repo, meta.repoName || repoNameFromUrl(meta.repo));
+      }
+    }
+
+    for (const [url, name] of referencedRepos) {
+      if (!registeredUrls.has(url)) {
+        info(`Registering repo ${c('bold', name)} (${url})...`);
+        try {
+          syncRepo(url, name);
+          config.repos.push({ name, url, addedAt: new Date().toISOString() });
+          saveConfig(config);
+          registeredUrls.add(url);
+          success(`Repo ${c('bold', name)} registered`);
+        } catch (e) {
+          error(`Failed to clone repo ${name} (${url}): ${e.message}`);
+          failedRepos.add(url);
+        }
+      }
+    }
+
+    // Re-discover skills now that missing repos are registered
+    const freshSkills = discoverSkills();
+
     for (const name of listed) {
-      const match = allSkills.find(s => s.name === name);
+      const meta = sjData.sklz[name];
+      if (meta.repo && failedRepos.has(meta.repo)) {
+        error(`Skipping ${c('bold', name)} — repo could not be cloned`);
+        continue;
+      }
+      const match = freshSkills.find(s => s.name === name);
       if (match) {
         toInstall.push(match);
       } else {
