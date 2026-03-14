@@ -151,7 +151,7 @@
                     <div class="flex-shrink-0 w-7 h-7 border border-protocol-300 dark:border-protocol-700 flex items-center justify-center text-xs font-bold text-protocol-500">3</div>
                     <div class="flex-1">
                         <p class="font-bold mb-2 text-sm">Commit only <code class="bg-protocol-100 dark:bg-protocol-800 px-1 font-normal">sklz.json</code></p>
-                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">On first install, sklz asks which tool you're using and saves it to <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>. Add the skills directory to your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">.gitignore</code>. Teammates run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync — just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.</p>
+                        <p class="text-protocol-500 dark:text-protocol-400 text-xs mb-3">On first install, sklz asks which tool you're using. After that, it auto-detects the vendor from the existing skills directory. Add the skills directory to your <code class="bg-protocol-100 dark:bg-protocol-800 px-1">.gitignore</code>. Teammates run <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz install</code> to sync — just like <code class="bg-protocol-100 dark:bg-protocol-800 px-1">npm install</code>.</p>
                         <div class="bg-[#0a0a0a] border border-protocol-700 p-4">
                             <pre class="text-white text-sm leading-relaxed"><span class="text-protocol-500 select-none"># .gitignore  (example: Claude Code)</span>
 .claude/skills/
@@ -226,7 +226,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz install</code>
-                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills from sklz.json (like npm install)</span>
+                            <span class="text-protocol-500 dark:text-protocol-400">Install all skills from sklz.json — auto-registers any missing repos</span>
                         </div>
                         <div class="grid grid-cols-2 gap-4 p-4 text-sm">
                             <code class="text-protocol-900 dark:text-white">sklz update [name...]</code>
@@ -277,7 +277,7 @@
         <!-- Vendors -->
         <section class="mb-16">
             <h2 class="text-base font-bold uppercase tracking-widest mb-4 border-b border-protocol-200 dark:border-protocol-800 pb-3">> Vendors</h2>
-            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">At install time, sklz asks which tool you're using and copies skills to the right directory. You can also pass <code class="bg-protocol-100 dark:bg-protocol-800 px-1">--vendor</code> to skip the prompt. The choice is not stored in <code class="bg-protocol-100 dark:bg-protocol-800 px-1">sklz.json</code>.</p>
+            <p class="text-protocol-600 dark:text-protocol-400 text-sm mb-4">sklz resolves the vendor in order: <code class="bg-protocol-100 dark:bg-protocol-800 px-1">--vendor</code> flag → auto-detected from existing vendor dirs → interactive prompt → default (Claude Code). After the first install, the vendor directory exists and is detected automatically — the prompt only appears on a fresh project.</p>
             <div class="border border-protocol-200 dark:border-protocol-800 divide-y divide-protocol-200 dark:divide-protocol-800 mb-4">
                 <div class="grid grid-cols-2 gap-4 p-4 text-sm bg-protocol-50 dark:bg-protocol-900">
                     <span class="text-protocol-500 dark:text-protocol-400 text-xs uppercase tracking-widest font-bold">Vendor</span>

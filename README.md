@@ -65,7 +65,14 @@ No databases. No APIs. Just git and files. Uses the `git` already configured on 
 
 ## Vendors
 
-When you run `sklz install`, sklz asks which tool you're using and installs the skills to the right directory. You can also pass `--vendor` directly to skip the prompt. The vendor choice is not stored — you pick it each time you install.
+When you run `sklz install`, sklz resolves the vendor in this order:
+
+1. `--vendor` flag (explicit)
+2. Auto-detected from existing vendor directories in the project
+3. Interactive prompt (TTY only)
+4. Default: **Claude Code**
+
+After the first install, the vendor directory exists and is detected automatically — you only get the prompt on the very first install in a fresh project.
 
 | Vendor | Skills directory |
 |---|---|
@@ -98,7 +105,7 @@ sklz repo sync                       # Pull latest from all repos
 ```bash
 sklz list [--tag <tag>]              # Browse available skills
 sklz search <query>                  # Search by name, description, or tag
-sklz install                                   # Install all skills from sklz.json
+sklz install                                   # Install all skills from sklz.json (auto-registers missing repos)
 sklz install <name...>                         # Install specific skill(s)
 sklz install <name...> --vendor "Claude Code"  # Install to a specific vendor
 sklz install --tag <tag>                       # Install all skills matching a tag
@@ -106,6 +113,8 @@ sklz update [name...]                          # Update installed skills
 sklz uninstall <name>                          # Remove a skill from project
 sklz status                                    # Show installed skills and their locations
 ```
+
+Most commands have short aliases: `i` → `install`, `ls` → `list`, `find` → `search`, `up` → `update`, `un` → `uninstall`, `st` → `status`.
 
 ### Disambiguation
 
