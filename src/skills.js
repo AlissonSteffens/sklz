@@ -179,6 +179,30 @@ export function listAvailableSkills({ tag, search } = {}) {
   return skills;
 }
 
+// ── Skill disambiguation prompt ─────────────────────────
+
+async function promptSkillChoice(name, matches) {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+  log(`\n${c('yellow', '!')} Multiple repos have a skill named ${c('bold', name)}:\n`);
+  matches.forEach((s, i) => {
+    const num = c('cyan', `${i + 1}.`);
+    log(`  ${num} ${c('bold', s.repoName)}  ${c('dim', s.version)}  ${s.description ? c('dim', '— ' + s.description) : ''}`);
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`\n  Choose [1]: `, (answer) => {
+      rl.close();
+      const n = parseInt(answer, 10);
+      if (!answer.trim() || isNaN(n) || n < 1 || n > matches.length) {
+        resolve(matches[0]);
+      } else {
+        resolve(matches[n - 1]);
+      }
+    });
+  });
+}
+
 // ── Vendor prompt ───────────────────────────────────────
 
 async function promptVendor() {
@@ -270,16 +294,21 @@ export async function installSkills(names, { tag, vendor: vendorFlag, cwd = proc
         skillName = parts[1];
       }
 
-      const match = allSkills.find(s => {
+      const matches = allSkills.filter(s => {
         const nameMatch = s.name === skillName;
         const repoMatch = repoFilter ? s.repoName === repoFilter : true;
         return nameMatch && repoMatch;
       });
 
-      if (match) {
-        toInstall.push(match);
-      } else {
+      if (matches.length === 0) {
         warn(`Skill not found: ${nameArg}`);
+      } else if (matches.length === 1) {
+        toInstall.push(matches[0]);
+      } else if (process.stdout.isTTY) {
+        toInstall.push(await promptSkillChoice(skillName, matches));
+      } else {
+        warn(`Multiple repos have "${skillName}" — using ${matches[0].repoName}. Use <repo>/<skill> to be explicit.`);
+        toInstall.push(matches[0]);
       }
     }
   } else {

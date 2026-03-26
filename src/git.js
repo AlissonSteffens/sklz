@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
 import { REPOS_DIR, info, success, error, warn } from './utils.js';
 
 function exec(cmd, opts = {}) {
@@ -26,6 +26,7 @@ export function syncRepo(url, name) {
   } else {
     info(`Cloning ${name}...`);
     try {
+      mkdirSync(dirname(localPath), { recursive: true });
       exec(`git clone --depth 1 "${url}" "${localPath}"`);
       success(`Cloned ${name}`);
     } catch (e) {
@@ -81,6 +82,7 @@ export function fullClone(url, name) {
     }
     exec('git pull --ff-only', { cwd: localPath });
   } else {
+    mkdirSync(dirname(localPath), { recursive: true });
     exec(`git clone "${url}" "${localPath}"`);
   }
   return localPath;

@@ -109,9 +109,20 @@ export function table(headers, rows) {
 // ── Misc ───────────────────────────────────────────────
 
 export function repoNameFromUrl(url) {
-  let name = basename(url);
-  name = name.replace(/\.git$/, '');
-  return name;
+  // SSH: git@github.com:owner/repo.git
+  const sshMatch = url.match(/^git@[^:]+:(.+?)(?:\.git)?$/);
+  if (sshMatch) return sshMatch[1];
+
+  // HTTPS: https://github.com/owner/repo.git
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.replace(/^\//, '').replace(/\.git$/, '').split('/');
+    if (parts.length >= 2) return `${parts[0]}/${parts[1]}`;
+  } catch {
+    // not a valid URL — fall through
+  }
+
+  return basename(url).replace(/\.git$/, '');
 }
 
 export function formatDate(isoString) {
